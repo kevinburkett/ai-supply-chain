@@ -8,3 +8,9 @@ SELECT * FROM orders WHERE id = $1;
 
 -- name: ListOrders :many
 SELECT * FROM orders ORDER BY created_at DESC;
+
+-- name: UpdateOrderStatus :one
+UPDATE orders
+SET status = $2, delay_risk = $3
+WHERE id = $1
+RETURNING *;
