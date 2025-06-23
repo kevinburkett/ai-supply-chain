@@ -94,7 +94,37 @@ func (r *mutationResolver) UpdateStatus(ctx context.Context, id string, status s
 
 // Orders is the resolver for the orders field.
 func (r *queryResolver) Orders(ctx context.Context) ([]*model.Order, error) {
-	panic(fmt.Errorf("not implemented: Orders - orders"))
+	if r.DB == nil {
+		return nil, fmt.Errorf("database not configured")
+	}
+
+	orders, err := r.DB.ListOrders(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*model.Order
+	for _, ord := range orders {
+		var prod *model.Product
+		if ord.ProductID.Valid {
+			p, err := r.DB.GetProduct(ctx, ord.ProductID.UUID)
+			if err != nil {
+				return nil, err
+			}
+			prod = &model.Product{ID: p.ID.String(), Name: p.Name}
+		}
+
+		result = append(result, &model.Order{
+			ID:             ord.ID.String(),
+			Product:        prod,
+			Qty:            int(ord.Quantity),
+			Status:         ord.Status,
+			CreatedAt:      ord.CreatedAt.Time.Format(time.RFC3339),
+			DelayRiskScore: ord.DelayRisk.Float64,
+		})
+	}
+
+	return result, nil
 }
 
 // Mutation returns MutationResolver implementation.
