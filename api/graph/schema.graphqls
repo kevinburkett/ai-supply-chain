@@ -1,0 +1,29 @@
+# GraphQL schema for AI supply chain
+
+type Product {
+  id: ID!
+  name: String!
+}
+
+type Order {
+  id: ID!
+  product: Product!
+  qty: Int!
+  status: String!
+  createdAt: String!
+  delayRiskScore: Float!
+}
+
+type Query {
+  orders: [Order!]!
+}
+
+input CreateOrderInput {
+  productId: ID!
+  qty: Int!
+}
+
+type Mutation {
+  createOrder(input: CreateOrderInput!): Order!
+  updateStatus(id: ID!, status: String!): Order!
+}
