@@ -97,6 +97,37 @@ func (r *queryResolver) Orders(ctx context.Context) ([]*model.Order, error) {
 	panic(fmt.Errorf("not implemented: Orders - orders"))
 }
 
+// Order is the resolver for the order field.
+func (r *queryResolver) Order(ctx context.Context, id string) (*model.Order, error) {
+	if r.DB == nil {
+		return nil, fmt.Errorf("database not configured")
+	}
+
+	orderID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, err
+	}
+
+	ord, err := r.DB.GetOrder(ctx, orderID)
+	if err != nil {
+		return nil, err
+	}
+
+	product, err := r.DB.GetProduct(ctx, ord.ProductID.UUID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Order{
+		ID:             ord.ID.String(),
+		Product:        &model.Product{ID: product.ID.String(), Name: product.Name},
+		Qty:            int(ord.Quantity),
+		Status:         ord.Status,
+		CreatedAt:      ord.CreatedAt.Time.Format(time.RFC3339),
+		DelayRiskScore: ord.DelayRisk.Float64,
+	}, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
