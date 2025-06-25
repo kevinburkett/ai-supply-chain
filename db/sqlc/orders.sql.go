@@ -97,3 +97,30 @@ func (q *Queries) ListOrders(ctx context.Context) ([]Order, error) {
 	}
 	return items, nil
 }
+
+const updateOrderStatus = `-- name: UpdateOrderStatus :one
+UPDATE orders
+SET status = $2, delay_risk = $3
+WHERE id = $1
+RETURNING id, product_id, quantity, status, delay_risk, created_at
+`
+
+type UpdateOrderStatusParams struct {
+	ID        uuid.UUID
+	Status    string
+	DelayRisk sql.NullFloat64
+}
+
+func (q *Queries) UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (Order, error) {
+	row := q.db.QueryRowContext(ctx, updateOrderStatus, arg.ID, arg.Status, arg.DelayRisk)
+	var i Order
+	err := row.Scan(
+		&i.ID,
+		&i.ProductID,
+		&i.Quantity,
+		&i.Status,
+		&i.DelayRisk,
+		&i.CreatedAt,
+	)
+	return i, err
+}

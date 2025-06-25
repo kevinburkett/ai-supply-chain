@@ -6,8 +6,11 @@ package graph
 
 import (
 	db "ai-supply-chain/db/sqlc"
+	"net/http"
 )
 
 type Resolver struct {
-	DB *db.Queries
+	Queries      *db.Queries
+	HTTPClient   *http.Client
+	AIServiceURL string
 }

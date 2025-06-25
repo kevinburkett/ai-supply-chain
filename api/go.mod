@@ -3,9 +3,13 @@ module api
 go 1.23.8
 
 require (
+	ai-supply-chain v0.0.0
 	github.com/99designs/gqlgen v0.17.52
+	github.com/google/uuid v1.6.0
 	github.com/vektah/gqlparser/v2 v2.5.16
 )
+
+replace ai-supply-chain => ..
 
 require (
 	ai-supply-chain v0.0.0
