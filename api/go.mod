@@ -12,6 +12,13 @@ require (
 replace ai-supply-chain => ..
 
 require (
+	ai-supply-chain v0.0.0
+	github.com/google/uuid v1.6.0
+)
+
+replace ai-supply-chain => ..
+
+require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
